@@ -1,0 +1,31 @@
+{
+  "product": "legends-temporal",
+  "banner_template": "legends-type-v1",
+  "social_template": "legends-social-v1",
+  "subtitle": "durable schedules, delayed timers, and event-history diagnosis for temporal",
+  "font": "Legends Regular",
+  "font_sha256": "3769f0f76477a7d9e2e6cb40422dedacb56c9ab1a6f7beee89b2b9ba6b8091ee",
+  "font_redistributed": false,
+  "files": [
+    {
+      "name": "banner.png",
+      "bytes": 67222,
+      "sha256": "7d90ef0c74c862faeacc8844146e0def87073a07ea33517c8bce0c505705b88d"
+    },
+    {
+      "name": "banner.webp",
+      "bytes": 63856,
+      "sha256": "994ac320e4ca3e54d07401a0602e70bac4475212b50dcaecf7f986ba83ea52b0"
+    },
+    {
+      "name": "preview.png",
+      "bytes": 29320,
+      "sha256": "b6b0389f3a9c1f20aa1681015e2fa0828ae57e17c5f1f79ddbe00fedf19769ef"
+    },
+    {
+      "name": "social-preview.png",
+      "bytes": 23217,
+      "sha256": "ed062a1f82becd9f231f803720adb6f5a26cd5a8102837ee8f8758cf5fca7878"
+    }
+  ]
+}

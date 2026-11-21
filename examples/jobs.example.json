@@ -1,0 +1,31 @@
+{
+  "jobs": [
+    {
+      "job_id": "nightly-report",
+      "title": "nightly report",
+      "description": "Runs an existing script every night at 02:30 local time.",
+      "cron": "30 2 * * *",
+      "timezone": "America/New_York",
+      "script": "scripts/nightly_report.py",
+      "args": ["--days", "1"],
+      "timeout_s": 900
+    },
+    {
+      "job_id": "heartbeat",
+      "title": "heartbeat",
+      "kind": "code",
+      "interval": "15m",
+      "code": "print('alive')",
+      "timeout_s": 60
+    },
+    {
+      "job_id": "weekly-agent-review",
+      "title": "weekly agent review",
+      "kind": "agent",
+      "cron": "0 9 * * 1",
+      "session_id": "replace-with-agent-session-id",
+      "message": "Weekly review: summarize last week's failed workflows and propose fixes.",
+      "timeout_s": 120
+    }
+  ]
+}

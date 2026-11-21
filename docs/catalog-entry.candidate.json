@@ -1,0 +1,66 @@
+{
+  "id": "legends-temporal",
+  "name": "Legends Temporal",
+  "repo": "avalonreset/legends-temporal",
+  "version": "0.1.0",
+  "summary": "Operate any local, self-hosted, or Temporal Cloud cluster with durable cron and interval schedules, one-shot start_delay timers, zero-rewrite 11-field ScriptJob and AgentJob workers across split control and exec task queues, compact event-history failure diagnosis, a confirm-gated stdio MCP server, and a 6-note Empire knowledge pack.",
+  "domains": [
+    "temporal",
+    "temporal-io",
+    "workflow-orchestration",
+    "durable-execution",
+    "cron-scheduler",
+    "durable-timers",
+    "task-queues",
+    "failure-diagnosis"
+  ],
+  "outcomes": [
+    "Audit offline SDK and knowledge-pack readiness or run live gRPC, namespace, task-queue poller, Web UI HTTP, and SSH systemd unit health checks via legends-temporal doctor --live",
+    "Create, preview (--dry-run), apply, trigger, pause, unpause, backfill, and delete durable server-side cron and interval schedules from CLI flags, JSON/YAML files, or existing Python job inventories",
+    "Fire one-shot durable delayed timers (30s, 15m, 2h, 3d, 1h30m) built on Temporal start_delay to run scripts, inline Python, arbitrary argv commands, env-held webhooks, or agent session turns",
+    "Run split control-plane and exec-plane workers hosting the replay-safe 11-field ScriptJob workflow so existing scripts execute unchanged on the machine that owns the data",
+    "List, filter, start, signal, query, cancel, and terminate workflow executions and reduce raw protobuf event histories into compact failure verdicts via workflow history --diagnose",
+    "Serve read-only inspection tools plus a confirm-gated timer tool over stdio JSON-RPC 2.0 (legends-temporal mcp) and resolve the 6-note Temporal knowledge pack for legends-empire"
+  ],
+  "examples": [
+    "Check if our Temporal server, namespace, and control and exec task-queue pollers are healthy",
+    "Preview and create a nightly 02:30 cron schedule or apply a JSON schedule inventory with overlap and catchup policies",
+    "Schedule a one-shot durable timer in 15 minutes to run a Python script, POST an env-held webhook, or wake an agent session",
+    "List failed workflows from last night and run workflow history --diagnose to get the script exit code, worker identity, output tail, and remediation hint",
+    "Start a control-plane or exec-plane ScriptJob worker and resolve the 6-note Temporal knowledge pack paths"
+  ],
+  "exclusions": [
+    "Never stores API keys, webhook URLs, or notification private keys in Temporal workflow inputs, history payloads, or config show outputs",
+    "Never deletes schedules or terminates running workflows without an explicit --yes confirmation flag",
+    "Never executes mutations from the stdio MCP server except temporal_timer_schedule when confirm: true is explicitly supplied"
+  ],
+  "install": {
+    "strategy": "python_venv_wheel_or_editable",
+    "requires_python": ">=3.11",
+    "entrypoints": [
+      "legends-temporal"
+    ]
+  },
+  "recipe": "docs/AGENT-RECIPE.md",
+  "knowledge_pack": "knowledge/temporal/pack.json",
+  "readiness_probes": [
+    {
+      "name": "doctor",
+      "command": [
+        "legends-temporal",
+        "doctor",
+        "--json"
+      ],
+      "paid_calls": false
+    },
+    {
+      "name": "resources",
+      "command": [
+        "legends-temporal",
+        "resources",
+        "--json"
+      ],
+      "paid_calls": false
+    }
+  ]
+}

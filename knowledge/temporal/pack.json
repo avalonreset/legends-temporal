@@ -1,0 +1,14 @@
+{
+  "schema": "legends.knowledge-pack/v1",
+  "module": "legends-temporal",
+  "version": "0.1.0",
+  "topic": "temporal",
+  "notes": [
+    {"file": "01-temporal-mental-model-and-determinism.md", "title": "Temporal mental model and determinism", "use_when": "explaining namespaces, task queues, workflows, activities, workers or replay safety"},
+    {"file": "02-schedules-and-durable-timers.md", "title": "Schedules and durable timers", "use_when": "replacing cron, Task Scheduler or sleep-then-run with server-side schedules and one-shot timers"},
+    {"file": "03-zero-rewrite-scriptjob-and-agentjob-pattern.md", "title": "Zero-rewrite ScriptJob and AgentJob pattern", "use_when": "wrapping existing scripts, commands, webhooks or agent turns without writing workflow code"},
+    {"file": "04-timeouts-retries-and-idempotency.md", "title": "Timeouts, retries and idempotency", "use_when": "choosing timeouts, reading timeout events, or making jobs safe to rerun"},
+    {"file": "05-self-hosted-postgres-and-tailnet-hardening.md", "title": "Self-hosted Postgres and private network hardening", "use_when": "running or securing a self-hosted Temporal server"},
+    {"file": "06-visibility-queries-and-failure-diagnosis.md", "title": "Visibility queries and failure diagnosis", "use_when": "finding failed runs, reading history, checking pollers"}
+  ]
+}

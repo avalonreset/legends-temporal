@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "legends-temporal"
+version = "0.1.0"
+description = "Agent-operated control of any Temporal cluster: schedules, durable delayed timers, workflow diagnosis, queues, a portable ScriptJob runtime and an MCP server."
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "Benjamin Samar / cto-legends"}]
+dependencies = ["temporalio>=1.8"]
+readme = "README.md"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Topic :: System :: Distributed Computing",
+]
+
+[project.optional-dependencies]
+yaml = ["pyyaml>=6"]
+test = ["pytest>=8"]
+
+[project.scripts]
+legends-temporal = "legends_temporal.cli:main"
+
+[project.urls]
+Repository = "https://github.com/avalonreset/legends-temporal"
+Issues = "https://github.com/avalonreset/legends-temporal/issues"
+
+[tool.setuptools.packages.find]
+include = ["legends_temporal*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
