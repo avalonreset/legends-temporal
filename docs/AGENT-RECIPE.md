@@ -1,13 +1,15 @@
 # `legends-temporal` agent recipe (canonical)
 
-Module `legends-temporal` v0.1.0. Agent-operated Temporal: durable schedules,
-one-shot timers, zero-rewrite script and agent jobs, queue and namespace
-health, and history diagnosis, over the official `temporalio` Python SDK.
+Module `legends-temporal` v0.1.1. Agent-operated Temporal: durable schedules,
+one-shot timers, first-class `cto-legends` `--module` scheduling, orphaned-queue
+and declarative drift auditing (`audit`), local/Docker/systemd cluster bootstrap
+(`bootstrap`), zero-rewrite script and agent jobs, queue and namespace health,
+and history diagnosis, over the official `temporalio` Python SDK.
 
 The only registered skill is `cto-legends`. This file is the canonical task
 instruction for the module. No standalone module skill exists or is required.
-An optional stdio MCP server (`legends-temporal mcp`) exposes the read paths
-and a confirm-gated timer.
+An optional stdio MCP server (`legends-temporal mcp`) exposes 9 read/preview tools
+and 1 confirm-gated timer tool.
 
 Read first, in order:
 
@@ -40,9 +42,12 @@ Read first, in order:
 
 | User intent | Command |
 | --- | --- |
+| Start a local persisted dev server or generate a hardened Docker Compose stack | `bootstrap local [--start]`, `bootstrap compose [--write]`, `bootstrap systemd [--write]` |
 | Is Temporal up, what is running | `doctor --live`, `queue describe`, `namespace list` |
+| Audit schedules for orphaned queues, leaked secrets, or inventory drift | `audit`, `audit --file defs.json`, `audit --file defs.json --offline` |
 | What is scheduled | `schedule list`, `schedule describe <id>` |
-| Run this later, once | `timer in <delay> --code ... \| --script ... \| --session <id> --message ... \| --command ... \| --webhook-env NAME` |
+| Schedule another `cto-legends` module on a cron or timer | `schedule create --id ... --cron "..." --module legends-<name> --arg=... --dry-run` or `timer in <delay> --module legends-<name> --arg=... --dry-run` |
+| Run this later, once | `timer in <delay> --code ... \| --script ... \| --module ... \| --session <id> --message ... \| --command ... \| --webhook-env NAME` |
 | Run this every day/hour | `schedule create --id ... --cron "..." ...` or `schedule apply --file defs.json` |
 | Run a defined job now | `job run <id>` or `schedule trigger <id>` |
 | Why did it fail | `workflow list --status failed`, then `workflow history <id> --diagnose` |

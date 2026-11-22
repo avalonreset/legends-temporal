@@ -67,6 +67,7 @@ REQUIRED_FILES = [
     "knowledge/temporal/04-timeouts-retries-and-idempotency.md",
     "knowledge/temporal/05-self-hosted-postgres-and-tailnet-hardening.md",
     "knowledge/temporal/06-visibility-queries-and-failure-diagnosis.md",
+    "knowledge/temporal/07-why-not-cron-or-built-in-agent-schedulers.md",
     "legends_temporal/__init__.py",
     "legends_temporal/__main__.py",
     "legends_temporal/cli.py",

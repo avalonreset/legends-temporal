@@ -44,15 +44,28 @@ TOOLS: list[dict[str, Any]] = [
          "tail_lines": {"type": "integer", "minimum": 0, "maximum": 200, "default": 20}},
          "required": ["workflow_id"], "additionalProperties": False}},
     {"name": "temporal_timer_schedule", "description": "Schedule a one-shot durable delayed timer (script, inline "
-     "code, or agent session wake). Returns a preview unless confirm is true.",
+     "code, cto-legends module, or agent session wake). Returns a preview unless confirm is true.",
      "inputSchema": {"type": "object", "properties": {
          "delay": {"type": "string", "description": "e.g. 30s, 15m, 2h, 1h30m"},
-         "code": {"type": "string"}, "script": {"type": "string"},
+         "code": {"type": "string"}, "script": {"type": "string"}, "module": {"type": "string"},
          "args": {"type": "array", "items": {"type": "string"}},
          "session": {"type": "string"}, "message": {"type": "string"}, "model": {"type": "string"},
          "title": {"type": "string"}, "notify_channel": {"type": "string"},
          "confirm": {"type": "boolean", "default": False}},
          "required": ["delay"], "additionalProperties": False}},
+    {"name": "temporal_schedule_audit", "description": "Audit schedule health, live task-queue pollers, secret hygiene "
+     "and optional declarative inventory drift.",
+     "inputSchema": {"type": "object", "properties": {
+         "file": {"type": "string", "description": "Optional JSON/YAML definitions file path"},
+         "offline": {"type": "boolean", "default": False}},
+         "additionalProperties": False}},
+    {"name": "temporal_bootstrap_plan", "description": "Preview a SQLite-persisted local Temporal dev server command, "
+     "hardened Docker Compose stack, or systemd unit blueprint (read-only preview).",
+     "inputSchema": {"type": "object", "properties": {
+         "target": {"type": "string", "enum": ["local", "compose", "systemd"], "default": "local"},
+         "bind_ip": {"type": "string", "default": "127.0.0.1"},
+         "role": {"type": "string", "enum": ["control", "exec", "all"], "default": "control"}},
+         "additionalProperties": False}},
 ]
 TOOL_NAMES = {t["name"] for t in TOOLS}
 
@@ -84,6 +97,7 @@ async def call_tool(profile: Profile, name: str, args: dict[str, Any]) -> dict[s
     if name == "temporal_timer_schedule":
         delay_s = timers.parse_delay(args["delay"])
         job = timers.build_timer_job(profile, args["delay"], script=args.get("script"), code=args.get("code"),
+                                     module=args.get("module"),
                                      session=args.get("session"), message=args.get("message"),
                                      model=args.get("model"), args=args.get("args"), title=args.get("title", ""),
                                      notify_channel=args.get("notify_channel"))
@@ -92,6 +106,26 @@ async def call_tool(profile: Profile, name: str, args: dict[str, Any]) -> dict[s
             return {"ok": True, "preview": True, "fires_in_s": delay_s, "job": to_wire(job),
                     "workflow_queue": profile.workflow_queue, "note": "call again with confirm=true to schedule"}
         return await _with_client(profile, lambda c: timers.start_timer(c, profile, job, delay_s))
+    if name == "temporal_schedule_audit":
+        from . import audit
+        defs = schedules.load_definitions(args["file"]) if args.get("file") else None
+        if args.get("offline"):
+            if defs is None:
+                raise ValueError("offline audit requires 'file'")
+            res = audit.audit_definitions(defs, profile)
+            res.pop("_audited_by_id", None)
+            return res
+        return await _with_client(profile, lambda c: audit.audit_cluster(c, profile, defs=defs))
+    if name == "temporal_bootstrap_plan":
+        from . import bootstrap
+        target = args.get("target", "local")
+        if target == "local":
+            return bootstrap.plan_local(profile, start=False, dry_run=True)
+        if target == "compose":
+            return bootstrap.plan_compose(profile, bind_ip=args.get("bind_ip", "127.0.0.1"), write=False, dry_run=True)
+        if target == "systemd":
+            return bootstrap.plan_systemd(profile, role=args.get("role", "control"), write=False, dry_run=True)
+        raise ValueError(f"unknown bootstrap target: {target}")
     raise KeyError(name)
 
 

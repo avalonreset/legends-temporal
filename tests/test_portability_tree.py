@@ -18,7 +18,7 @@ REQUIRED = [
     "knowledge/temporal/pack.json", "skills/cto-legends/SKILL.md", "examples/jobs.example.json",
 ]
 MODULES = ["cli", "config", "client", "schedules", "timers", "workflows", "queues", "namespaces",
-           "runtime", "doctor", "mcp_server", "fleet_update", "__main__"]
+           "runtime", "doctor", "mcp_server", "fleet_update", "audit", "bootstrap", "__main__"]
 
 # Strings that would leak one operator's machines, accounts or private network into a portable tree.
 FOUNDER_MARKERS = re.compile(
@@ -48,7 +48,7 @@ def test_version_matches_pyproject_and_contract():
     meta = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     contract = json.loads((ROOT / "docs/CLI-CONTRACT.json").read_text(encoding="utf-8"))
     assert meta["project"]["name"] == "legends-temporal"
-    assert meta["project"]["version"] == legends_temporal.__version__ == contract["version"] == "0.1.0"
+    assert meta["project"]["version"] == legends_temporal.__version__ == contract["version"] == "0.1.1"
     assert meta["project"]["scripts"]["legends-temporal"] == "legends_temporal.cli:main"
     assert (ROOT / ".legends-module").read_text(encoding="utf-8").strip().startswith("legends-temporal")
 

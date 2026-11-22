@@ -9,6 +9,6 @@ authors:
 repository-code: "https://github.com/avalonreset/legends-temporal"
 url: "https://github.com/avalonreset/cto-legends"
 license: "MIT"
-version: "0.1.0"
+version: "0.1.1"
 date-released: "2026-11-21"
-abstract: "Agent-operated control of any Temporal cluster: durable schedules, one-shot delayed timers, zero-rewrite ScriptJob and AgentJob workers, event-history failure diagnosis, stdio MCP server, and a 6-note Empire knowledge pack."
+abstract: "Agent-operated control of any Temporal cluster: durable schedules, one-shot delayed timers, first-class cto-legends --module scheduling, schedule drift and orphaned-queue poller audits, local/Docker/systemd cluster bootstrap blueprints, zero-rewrite ScriptJob and AgentJob workers, event-history failure diagnosis, stdio MCP server, and a 7-note Empire knowledge pack."

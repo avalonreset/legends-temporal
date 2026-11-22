@@ -1,7 +1,7 @@
 {
   "schema": "legends.cli-contract/v1",
   "module": "legends-temporal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "entrypoints": ["legends-temporal", "python -m legends_temporal"],
   "global_flags": {
     "--profile": "named profile from the config file (default: default_profile, then detected, then built-in local)",
@@ -34,9 +34,10 @@
     "timer in",
     "workflow start", "workflow signal", "workflow cancel", "workflow terminate",
     "job run",
-    "worker"
+    "worker",
+    "bootstrap local", "bootstrap compose", "bootstrap systemd"
   ],
-  "dry_run_capable": ["schedule create", "schedule apply", "timer in"],
+  "dry_run_capable": ["schedule create", "schedule apply", "timer in", "bootstrap local", "bootstrap compose", "bootstrap systemd"],
   "confirm_required": {"schedule delete": "--yes", "workflow terminate": "--yes"},
   "commands": {
     "version": [],
@@ -50,14 +51,14 @@
     "queue describe": ["<task_queues>"],
     "schedule list": ["--query"],
     "schedule describe": ["<schedule_id>"],
-    "schedule create": ["--id", "--title", "--cron", "--interval", "--timezone", "--overlap", "--catchup-window", "--jitter", "--remaining-actions", "--paused", "--script", "--code", "--args", "--arg", "--session", "--spawn", "--agent", "--message", "--model", "--effort", "--type", "--project", "--workspace", "--cwd", "--notify-channel", "--queue", "--interpreter", "--timeout-s", "--dry-run"],
+    "schedule create": ["--id", "--title", "--cron", "--interval", "--timezone", "--overlap", "--catchup-window", "--jitter", "--remaining-actions", "--paused", "--script", "--code", "--module", "--args", "--arg", "--session", "--spawn", "--agent", "--message", "--model", "--effort", "--type", "--project", "--workspace", "--cwd", "--notify-channel", "--queue", "--interpreter", "--timeout-s", "--dry-run"],
     "schedule apply": ["--file", "--from-python", "--pythonpath", "--only", "--dry-run"],
     "schedule trigger": ["<schedule_id>", "--overlap"],
     "schedule pause": ["<schedule_id>", "--note"],
     "schedule unpause": ["<schedule_id>", "--note"],
     "schedule delete": ["<schedule_id>", "--yes"],
     "schedule backfill": ["<schedule_id>", "--start", "--end", "--overlap"],
-    "timer in": ["<delay>", "--command", "--webhook-env", "--body", "--job-id", "--wait", "--wait-timeout", "--dry-run", "--script", "--code", "--args", "--arg", "--session", "--spawn", "--agent", "--message", "--model", "--effort", "--type", "--project", "--workspace", "--cwd", "--title", "--notify-channel", "--queue", "--interpreter", "--timeout-s"],
+    "timer in": ["<delay>", "--command", "--webhook-env", "--body", "--job-id", "--wait", "--wait-timeout", "--dry-run", "--script", "--code", "--module", "--args", "--arg", "--session", "--spawn", "--agent", "--message", "--model", "--effort", "--type", "--project", "--workspace", "--cwd", "--title", "--notify-channel", "--queue", "--interpreter", "--timeout-s"],
     "workflow list": ["--status", "--type", "--id-prefix", "--query", "--limit"],
     "workflow describe": ["<workflow_id>", "--run-id"],
     "workflow history": ["<workflow_id>", "--run-id", "--diagnose", "--limit", "--tail-lines"],
@@ -69,6 +70,10 @@
     "job list": ["--from-python", "--pythonpath", "--canary"],
     "job run": ["<job_id>", "--no-wait", "--run-timeout", "--from-python", "--pythonpath", "--canary"],
     "worker": ["--role", "--log-file", "--max-concurrent"],
+    "audit": ["--file", "--from-python", "--pythonpath", "--offline"],
+    "bootstrap local": ["--db-path", "--port", "--ui-port", "--start", "--dry-run"],
+    "bootstrap compose": ["--output-dir", "--bind-ip", "--grpc-port", "--ui-port", "--write", "--dry-run"],
+    "bootstrap systemd": ["--output-dir", "--role", "--write", "--dry-run"],
     "mcp": []
   },
   "mcp_tools": [
@@ -79,7 +84,9 @@
     "temporal_schedule_describe",
     "temporal_workflow_list",
     "temporal_workflow_diagnose",
-    "temporal_timer_schedule"
+    "temporal_timer_schedule",
+    "temporal_schedule_audit",
+    "temporal_bootstrap_plan"
   ],
   "wire_contract": {
     "workflow_type": "ScriptJob",

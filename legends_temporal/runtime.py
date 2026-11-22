@@ -100,6 +100,20 @@ def code_job(job_id: str, title: str, queue: str, interpreter: str, code: str,
     return script_job(job_id, title, queue, interpreter, "-c", [code, *(args or [])], **kw)
 
 
+def module_job(job_id: str, title: str, queue: str, interpreter: str, module_name: str,
+               args: list[str] | None = None, **kw: Any) -> ScriptJob:
+    """Run an installed cto-legends module inside its isolated release environment via
+    `python -m cto_legends run <module> -- <args>` while keeping the 11-field ScriptJob wire contract."""
+    import re
+    mod = (module_name or "").strip().lower()
+    if not re.fullmatch(r"legends-[a-z0-9-]+", mod):
+        raise ValueError(f"invalid cto-legends module slug '{module_name}' (expected legends-<name>)")
+    mod_args = ["cto_legends", "run", mod]
+    if args:
+        mod_args += ["--", *[str(a) for a in args]]
+    return script_job(job_id, title, queue, interpreter, "-m", mod_args, **kw)
+
+
 def _ensure_stipend_depth_header(message: str, depth: int = 1) -> str:
     if not message or message.lstrip().startswith("[stipend depth"):
         return message

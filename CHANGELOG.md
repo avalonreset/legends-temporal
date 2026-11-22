@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1 (2026-11-21)
+
+- Add first-class `cto-legends` ecosystem module scheduling (`--module <legends-module>` on `schedule create` and `timer in`, `"kind": "module"` in declarative JSON/YAML schedules, and `module` in MCP `temporal_timer_schedule`), compiling any installed `cto-legends` module call into the 11-field `ScriptJob` wire contract (`python -m cto_legends run <module> -- <args>`).
+- Add `legends-temporal audit` (and MCP tool `temporal_schedule_audit`) for offline declarative schedule validation (5-field cron syntax, IANA timezones, overlap vs. timeout pile-up detection, and secret/shell-sleep argument scanning) and live cluster audits (cross-checking every schedule's `workflow_queue` and `exec_queue` against live task-queue pollers to catch orphaned queues with 0 active workers, paused schedules, missed catchup windows, and 3-way inventory drift: `in_sync`, `missing_on_server`, `untracked_on_server`, `spec_drifted`).
+- Add `legends-temporal bootstrap local|compose|systemd` (and MCP tool `temporal_bootstrap_plan`) to launch SQLite-persisted local Temporal dev servers (`--db-filename` enforced so schedules survive restarts), generate hardened self-hosted PostgreSQL 16 + Temporal + UI Docker Compose stacks bound strictly to `127.0.0.1` or an explicit private IP (refusing `0.0.0.0`), and generate Linux `systemd` worker and daily `pg_dump` backup units.
+- Expand the attachable Empire knowledge pack (`knowledge/temporal/pack.json`) to 7 notes with `07-why-not-cron-or-built-in-agent-schedulers.md`.
+
 ## 0.1.0 (2026-11-21)
 
 First public release of `legends-temporal`, agent-operated control of any Temporal cluster.

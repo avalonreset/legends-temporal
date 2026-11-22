@@ -104,7 +104,7 @@ def render_slot_2() -> None:
     body += t.run(x0, y_head, ti, "&gt;_", "#ff0000", "700")
     x_title = x0 + width("&gt;_", ti) + 8
     headline = "Cron that survives. Run where data lives. Diagnose failures."
-    right_tag = "// temporal sdk · scriptjob · 6-note pack"
+    right_tag = "// temporal sdk · scriptjob · empire pack"
     assert x_title + width(headline, hd) + 12 <= x1 - width(right_tag, lb), "Slot 2 header collides with right tag"
     body += t.run(x_title, y_head, hd, headline, "#ffffff", "700")
     body += t.run(x1, y_head, lb, right_tag, "#a1a1aa", "400", "end")
@@ -199,23 +199,23 @@ def render_slot_3() -> None:
     rows = [
         (
             "01",
-            '"Schedule nightly report at 2:30am"',
-            'schedule create --dry-run <tspan fill="#ff0000">→</tspan> schedule create --cron <tspan fill="#ff0000">→</tspan> schedule list',
+            '"Schedule a cto-legends module"',
+            'schedule create --module <tspan fill="#ff0000">→</tspan> --dry-run preview <tspan fill="#ff0000">→</tspan> schedule list',
         ),
         (
             "02",
             '"Fire a timer in 15m to run our job"',
-            'timer in 15m --dry-run <tspan fill="#ff0000">→</tspan> start_delay ScriptJob <tspan fill="#ff0000">→</tspan> script / webhook / agent',
+            'timer in 15m --dry-run <tspan fill="#ff0000">→</tspan> start_delay ScriptJob <tspan fill="#ff0000">→</tspan> script / module / agent',
         ),
         (
             "03",
-            '"Why did last night\'s workflow fail?"',
-            'workflow list --status failed <tspan fill="#ff0000">→</tspan> workflow history --diagnose <tspan fill="#ff0000">→</tspan> exit code &amp; tail',
+            '"Audit schedules, queues &amp; drift"',
+            'audit <tspan fill="#ff0000">→</tspan> live poller &amp; secret check <tspan fill="#ff0000">→</tspan> 3-way inventory drift',
         ),
         (
             "04",
-            '"Check queue pollers &amp; load runbooks"',
-            'doctor --live <tspan fill="#ff0000">→</tspan> queue describe <tspan fill="#ff0000">→</tspan> resources (6-note Empire knowledge pack)',
+            '"Why did last night\'s workflow fail?"',
+            'workflow list --status failed <tspan fill="#ff0000">→</tspan> workflow history --diagnose <tspan fill="#ff0000">→</tspan> exit code &amp; tail',
         ),
     ]
 
@@ -311,12 +311,12 @@ def render_slot_4() -> None:
     chip_top = 170
     base = chip_top + 13.5
     surfaces = (
-        ("01", "Live Doctor"),
+        ("01", "Bootstrap"),
         ("02", "Schedules"),
         ("03", "Timers"),
-        ("04", "ScriptJob"),
-        ("05", "--diagnose"),
-        ("06", "Queue Pollers"),
+        ("04", "--module"),
+        ("05", "Audit &amp; Drift"),
+        ("06", "--diagnose"),
         ("07", "MCP &amp; Pack"),
     )
     total_slots = len(surfaces)
@@ -337,10 +337,10 @@ def render_slot_5() -> None:
     t = Typesetter()
     ti, lb = u("title", K_WIDE), u("label", K_WIDE)
     rows = [
-        ("Host sleeps &amp; restarts", "Missed cron ticks &amp; dead background sleeps", "Server-side clock, 12h catchup &amp; start_delay timers"),
-        ("Workflow code &amp; payloads", "Custom DAG rewrites or drifted ad-hoc args", "Zero-rewrite 11-field ScriptJob for scripts &amp; agents"),
-        ("Where jobs execute", "Tied to one host or exposed over raw SSH", "Split control &amp; exec queues; waits up to 6h for worker"),
-        ("Failure triage &amp; secrets", "Silent cron failures &amp; tokens in CLI args", "history --diagnose verdicts + env-held webhook/API keys"),
+        ("App schedulers &amp; sleeps", "1h rate walls, approval popups &amp; dead sleeps", "Server-side clock, 12h catchup &amp; start_delay timers"),
+        ("Ecosystem &amp; DAG rewrites", "Custom DAG rewrites or brittle shell wrappers", "Zero-rewrite 11-field ScriptJob + --module runner"),
+        ("Where jobs execute", "Tied to one host or silent orphaned queues", "Split control/exec queues + live audit poller check"),
+        ("Failure triage &amp; secrets", "15k-token protobuf dumps &amp; tokens in args", "history --diagnose verdicts + secret/drift audit"),
     ]
     h = 198
     col0_x, col1_x, col2_x = 20, 206, 504

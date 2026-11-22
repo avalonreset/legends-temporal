@@ -74,7 +74,7 @@ def test_global_flags_work_before_and_after_subcommand():
 def test_version_command(capsys):
     assert cli.main(["version", "--json"]) == 0
     out = json.loads(capsys.readouterr().out)
-    assert out["version"] == "0.1.0"
+    assert out["version"] == "0.1.1"
 
 
 def test_usage_error_exit_code():

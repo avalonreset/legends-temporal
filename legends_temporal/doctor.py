@@ -22,6 +22,7 @@ KNOWLEDGE_NOTES = (
     "01-temporal-mental-model-and-determinism.md", "02-schedules-and-durable-timers.md",
     "03-zero-rewrite-scriptjob-and-agentjob-pattern.md", "04-timeouts-retries-and-idempotency.md",
     "05-self-hosted-postgres-and-tailnet-hardening.md", "06-visibility-queries-and-failure-diagnosis.md",
+    "07-why-not-cron-or-built-in-agent-schedulers.md",
 )
 MIN_SDK = (1, 8)
 

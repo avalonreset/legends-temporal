@@ -46,6 +46,7 @@ def parse_delay(spec: str) -> int:
 
 
 def build_timer_job(profile: Profile, delay_label: str, *, script: str | None = None, code: str | None = None,
+                    module: str | None = None,
                     session: str | None = None, spawn: bool = False, agent: str | None = None,
                     message: str | None = None, model: str | None = None, effort: str | None = None,
                     task_type: str = "build", project: str | None = None, workspace: str = "",
@@ -56,10 +57,10 @@ def build_timer_job(profile: Profile, delay_label: str, *, script: str | None = 
                     timeout_s: int | None = None, wait_for_worker_s: int = 6 * 3600,
                     job_id: str | None = None, now: int | None = None) -> runtime.ScriptJob:
     is_spawn = bool(spawn or (agent and not session))
-    modes = [m for m, v in (("script", script), ("code", code), ("spawn", is_spawn), ("session", session),
+    modes = [m for m, v in (("script", script), ("code", code), ("module", module), ("spawn", is_spawn), ("session", session),
                             ("command", command), ("webhook", webhook_env)) if v]
     if len(modes) != 1:
-        raise ValueError("choose exactly one of --script, --code, --session, --spawn/--agent, --command, --webhook-env")
+        raise ValueError("choose exactly one of --script, --code, --module, --session, --spawn/--agent, --command, --webhook-env")
     mode = modes[0]
     ts = int(time.time()) if now is None else now
     q = queue or profile.exec_queue
@@ -91,6 +92,10 @@ def build_timer_job(profile: Profile, delay_label: str, *, script: str | None = 
     if mode == "code":
         return runtime.code_job(job_id or f"oneshot-code-{ts}", title or f"oneshot · inline python (+{delay_label})",
                                 q, interp, code, args, timeout_s=timeout_s or 900, **common)
+    if mode == "module":
+        return runtime.module_job(job_id or f"oneshot-{module}-{ts}",
+                                  title or f"oneshot · {module} (+{delay_label})",
+                                  q, interp, str(module), args, timeout_s=timeout_s or 900, **common)
     if mode == "script":
         name = script.replace("\\", "/").rsplit("/", 1)[-1]
         return runtime.script_job(job_id or f"oneshot-script-{ts}", title or f"oneshot · {name} (+{delay_label})",

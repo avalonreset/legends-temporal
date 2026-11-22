@@ -183,6 +183,33 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--role", choices=["control", "exec", "all"], default="all")
     p.add_argument("--log-file", dest="log_file", default=None)
     p.add_argument("--max-concurrent", dest="max_concurrent", type=int, default=2)
+
+    p = add(sub, "audit", "audit schedule health, live queue pollers, secret hygiene and inventory drift")
+    p.add_argument("--file", default=None, help="JSON or YAML definitions to compare against")
+    p.add_argument("--from-python", dest="from_python", default=None, help="module:ATTR Python inventory")
+    p.add_argument("--pythonpath", action="append", default=None)
+    p.add_argument("--offline", action="store_true", help="audit definitions offline without connecting to Temporal")
+
+    b = sub.add_parser("bootstrap", help="plan or launch a local dev server, hardened Docker Compose stack, or systemd units").add_subparsers(dest="sub", required=True)
+    p = add(b, "local", "plan or launch a SQLite-persisted local Temporal dev server")
+    p.add_argument("--db-path", dest="db_path", default=None, help="SQLite persistence file path")
+    p.add_argument("--port", type=int, default=7233, help="gRPC frontend port (default 7233)")
+    p.add_argument("--ui-port", dest="ui_port", type=int, default=8233, help="Web UI port (default 8233)")
+    p.add_argument("--start", action="store_true", help="launch the persisted local dev server in background")
+    p.add_argument("--dry-run", action="store_true")
+    p = add(b, "compose", "generate a hardened PostgreSQL + Temporal + UI Docker Compose stack")
+    p.add_argument("--output-dir", dest="output_dir", default="./temporal-stack")
+    p.add_argument("--bind-ip", dest="bind_ip", default="127.0.0.1", help="loopback or Tailscale IP (never 0.0.0.0)")
+    p.add_argument("--grpc-port", dest="grpc_port", type=int, default=7233)
+    p.add_argument("--ui-port", dest="ui_port", type=int, default=8088)
+    p.add_argument("--write", action="store_true", help="write docker-compose.yml and .env.example to --output-dir")
+    p.add_argument("--dry-run", action="store_true")
+    p = add(b, "systemd", "generate Linux systemd worker and PostgreSQL backup timer units")
+    p.add_argument("--output-dir", dest="output_dir", default="./systemd")
+    p.add_argument("--role", choices=["control", "exec", "all"], default="control")
+    p.add_argument("--write", action="store_true", help="write systemd unit files to --output-dir")
+    p.add_argument("--dry-run", action="store_true")
+
     add(sub, "mcp", "serve the MCP stdio JSON-RPC server")
     return ap
 
@@ -190,6 +217,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _job_flags(p: argparse.ArgumentParser, title: bool = True) -> None:
     p.add_argument("--script", default=None)
     p.add_argument("--code", default=None)
+    p.add_argument("--module", default=None, help="cto-legends module slug (e.g. legends-empire, legends-geogrid)")
     p.add_argument("--args", nargs="*", default=[], help="script arguments (values must not start with '-')")
     p.add_argument("--arg", dest="arg_extra", action="append", default=[],
                    help="one script argument, repeatable; use --arg=--flag for dash values (appended after --args)")
@@ -287,6 +315,16 @@ def _human(cmd: str, sub: str | None, r: dict[str, Any]) -> str:
             detail = c["detail"] if isinstance(c["detail"], str) else json.dumps(c["detail"], default=str)
             lines.append(f"  [{c['status']}] {c['name']}: {detail[:160]}")
         return "\n".join(lines)
+    if key == "audit":
+        lines = [f"legends-temporal audit ({r['mode']}) profile={r['profile']}: {'OK' if r['ok'] else 'FAIL'} "
+                 f"(errors={r['error_count']}, warnings={r['warning_count']})"]
+        for iss in r.get("issues", []):
+            lines.append(f"  [{iss['severity']}] {iss['code']} ({iss['job_id']}): {iss['message']}")
+        if r.get("drift"):
+            dr = r["drift"]
+            lines.append(f"  drift: in_sync={len(dr['in_sync'])} missing_on_server={len(dr['missing_on_server'])} "
+                         f"untracked_on_server={len(dr['untracked_on_server'])} spec_drifted={len(dr['spec_drifted'])}")
+        return "\n".join(lines)
     if key == "workflow history" and "verdict" in r:
         v = r["verdict"]
         lines = [f"{r['workflow_id']}: {v['status']}" + (f" | failed: {v.get('failed_activity')}" if
@@ -362,7 +400,8 @@ async def _dispatch(a: argparse.Namespace, profile: Profile) -> dict[str, Any]:
     if cmd == "timer":
         delay_s = timers.parse_delay(a.delay)
         body = json.loads(a.body) if a.body else None
-        job = timers.build_timer_job(profile, a.delay, script=a.script, code=a.code, session=a.session,
+        job = timers.build_timer_job(profile, a.delay, script=a.script, code=a.code, module=a.module,
+                                     session=a.session,
                                      spawn=a.spawn, agent=a.agent, message=a.message, model=a.model,
                                      effort=a.effort, task_type=a.task_type, project=a.project,
                                      workspace=a.workspace, command=a.command,
@@ -372,6 +411,24 @@ async def _dispatch(a: argparse.Namespace, profile: Profile) -> dict[str, Any]:
         if a.dry_run:
             return {"ok": True, "dry_run": True, "fires_in_s": delay_s, "workflow_queue": profile.workflow_queue,
                     "job": runtime.to_wire(job)}
+    if cmd == "bootstrap":
+        from . import bootstrap
+        if sub == "local":
+            return bootstrap.plan_local(profile, db_path=a.db_path, port=a.port, ui_port=a.ui_port,
+                                        namespace=a.namespace, start=a.start, dry_run=a.dry_run)
+        if sub == "compose":
+            return bootstrap.plan_compose(profile, output_dir=a.output_dir, bind_ip=a.bind_ip,
+                                          grpc_port=a.grpc_port, ui_port=a.ui_port, namespace=a.namespace,
+                                          write=a.write, dry_run=a.dry_run)
+        if sub == "systemd":
+            return bootstrap.plan_systemd(profile, output_dir=a.output_dir, role=a.role,
+                                          write=a.write, dry_run=a.dry_run)
+    if cmd == "audit" and a.offline:
+        from . import audit
+        defs = schedules.load_definitions(a.file, None, None) if a.file else _inventory(a, profile)
+        res = audit.audit_definitions(defs, profile)
+        res.pop("_audited_by_id", None)
+        return res
     if cmd == "schedule" and sub == "delete" and not a.yes:
         raise ConfigError("schedule delete needs --yes")
     if cmd == "workflow" and sub == "terminate" and not a.yes:
@@ -453,6 +510,14 @@ async def _dispatch(a: argparse.Namespace, profile: Profile) -> dict[str, Any]:
         wire = runtime.to_wire({k: v for k, v in defs[a.job_id].items() if k in runtime.WIRE_FIELDS})
         return await workflows.run_job(client, profile.workflow_queue, wire, wait=not a.no_wait,
                                        timeout_s=a.run_timeout)
+    if cmd == "audit":
+        from . import audit
+        defs = None
+        if a.file:
+            defs = schedules.load_definitions(a.file, None, None)
+        elif a.from_python or profile.jobs_source:
+            defs = _inventory(a, profile)
+        return await audit.audit_cluster(client, profile, defs=defs)
     raise ConfigError(f"unknown command {cmd} {sub or ''}")
 
 

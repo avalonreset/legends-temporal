@@ -26,7 +26,7 @@ OVERLAPS = ("SKIP", "BUFFER_ONE", "BUFFER_ALL", "CANCEL_OTHER", "TERMINATE_OTHER
 SCHEDULE_KEYS = {"cron", "crons", "interval", "interval_offset", "timezone", "jitter", "overlap",
                  "catchup_window", "pause_on_failure", "remaining_actions", "paused", "note", "kind",
                  "session_id", "spawn", "agent", "effort", "task_type", "project", "workspace",
-                 "message", "model", "code", "agent_ctl", "description"}
+                 "message", "model", "code", "module", "agent_ctl", "description"}
 
 
 # ---------------- declarative definitions ----------------
@@ -103,6 +103,14 @@ def expand_definition(defn: dict[str, Any], profile: Profile) -> dict[str, Any]:
         d.update(runtime.to_wire(job))
     elif kind == "code":
         d["script"], d["args"] = "-c", [d["code"], *d.get("args", [])]
+    elif kind == "module" or d.get("module"):
+        job = runtime.module_job(
+            d["job_id"], d["title"], d["queue"], d["interpreter"], d["module"],
+            d.get("args"), cwd=d["cwd"], notify_channel=d["notify_channel"],
+            timeout_s=int(d.get("timeout_s", 900)), cron=d.get("cron") or "",
+            wait_for_worker_s=int(d.get("wait_for_worker_s", 6 * 3600)),
+        )
+        d.update(runtime.to_wire(job))
     if isinstance(d.get("cron"), str) and d.get("cron"):
         d.setdefault("crons", [d["cron"]])
     return d
@@ -204,7 +212,13 @@ def calendar_to_cron(cal: Any) -> str:
     parts = []
     for f in ("minute", "hour", "day_of_month", "month", "day_of_week"):
         text = _ranges(getattr(cal, f))
-        parts.append("*" if text == _FULL_RANGES[f] else text)
+        full = _FULL_RANGES[f]
+        if text == full:
+            parts.append("*")
+        elif text.startswith(full + "/"):
+            parts.append("*" + text[len(full):])
+        else:
+            parts.append(text)
     return " ".join(parts)
 
 
@@ -360,10 +374,12 @@ def flag_definition(args: Any, profile: Profile) -> dict[str, Any]:
             raise ValueError("--session requires --message")
     elif args.code:
         d.update(kind="code", code=args.code, args=list(args.args or []))
+    elif getattr(args, "module", None):
+        d.update(kind="module", module=args.module, args=list(args.args or []))
     elif args.script:
         d.update(script=args.script, args=list(args.args or []))
     else:
-        raise ValueError("choose one of --script, --code, --session")
+        raise ValueError("choose one of --script, --code, --module, --session, --spawn/--agent")
     if args.cron:
         d["crons"] = list(args.cron)
     if args.interval:
