@@ -1,7 +1,7 @@
 {
   "schema": "legends.knowledge-pack/v1",
   "module": "legends-temporal",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "topic": "temporal",
   "notes": [
     {"file": "01-temporal-mental-model-and-determinism.md", "title": "Temporal mental model and determinism", "use_when": "explaining namespaces, task queues, workflows, activities, workers or replay safety"},

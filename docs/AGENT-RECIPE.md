@@ -1,6 +1,6 @@
 # `legends-temporal` agent recipe (canonical)
 
-Module `legends-temporal` v0.1.1. Agent-operated Temporal: durable schedules,
+Module `legends-temporal` v0.1.2. Agent-operated Temporal: durable schedules,
 one-shot timers, first-class `cto-legends` `--module` scheduling, orphaned-queue
 and declarative drift auditing (`audit`), local/Docker/systemd cluster bootstrap
 (`bootstrap`), zero-rewrite script and agent jobs, queue and namespace health,

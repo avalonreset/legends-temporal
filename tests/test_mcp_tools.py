@@ -19,7 +19,7 @@ def rpc(method, params=None, mid=1):
 
 def test_initialize_and_ping():
     r = rpc("initialize", {"protocolVersion": "2025-06-18"})
-    assert r["result"]["serverInfo"] == {"name": "legends-temporal", "version": "0.1.1"}
+    assert r["result"]["serverInfo"] == {"name": "legends-temporal", "version": "0.1.2"}
     assert r["result"]["protocolVersion"] == "2025-06-18"
     assert "tools" in r["result"]["capabilities"]
     assert rpc("ping")["result"] == {}

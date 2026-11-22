@@ -1,4 +1,4 @@
-"""Unit tests for v0.1.1 features: cto-legends --module scheduling, audit, and bootstrap."""
+"""Unit tests for v0.1.2 features: cto-legends --module scheduling, audit, and bootstrap."""
 from __future__ import annotations
 
 import json

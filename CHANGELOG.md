@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 (2026-11-22)
+
+- Sync vendored `cto-legends` router skill pin (`69ddc4f68faa`), enforce LF line endings via `.gitattributes`, and standardize release artifact checksums.
+
 ## 0.1.1 (2026-11-21)
 
 - Add first-class `cto-legends` ecosystem module scheduling (`--module <legends-module>` on `schedule create` and `timer in`, `"kind": "module"` in declarative JSON/YAML schedules, and `module` in MCP `temporal_timer_schedule`), compiling any installed `cto-legends` module call into the 11-field `ScriptJob` wire contract (`python -m cto_legends run <module> -- <args>`).

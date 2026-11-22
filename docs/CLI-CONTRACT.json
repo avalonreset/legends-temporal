@@ -1,7 +1,7 @@
 {
   "schema": "legends.cli-contract/v1",
   "module": "legends-temporal",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "entrypoints": ["legends-temporal", "python -m legends_temporal"],
   "global_flags": {
     "--profile": "named profile from the config file (default: default_profile, then detected, then built-in local)",
