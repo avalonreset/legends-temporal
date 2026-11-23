@@ -25,6 +25,8 @@ test = ["pytest>=8"]
 legends-temporal = "legends_temporal.cli:main"
 
 [project.urls]
+Homepage = "https://cto-legends.com/modules/legends-temporal"
+Documentation = "https://cto-legends.com/modules/legends-temporal"
 Repository = "https://github.com/avalonreset/legends-temporal"
 Issues = "https://github.com/avalonreset/legends-temporal/issues"
 
